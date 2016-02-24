@@ -23,6 +23,8 @@ if (getCookie('SiebelRefreshTimerInterval') == ''){
 
 var refreshInterval = parseInt(getCookie('SiebelRefreshTimerInterval'));
 
+var prevURL = '';
+
 var refreshEnabled = false;
 var locationMatch = 'SWECmd=GotoView&SWEView=All+Service+Request+List+View';
 var refreshTimer = null;
@@ -38,6 +40,11 @@ var checkLocation = setInterval(function(){
 
 var detectRefresh = setInterval(function(){
 	if (refreshEnabled){
+		if (location.href != prevURL){
+			clearInterval(refreshTimer);
+			refreshTimer = null;
+			prevURL = location.href;
+		}
 		if (refreshTimer == null){
 			refreshTimer = setInterval(function(){
 				location.reload();
@@ -48,5 +55,3 @@ var detectRefresh = setInterval(function(){
 		refreshTimer = null;
 	}
 },500);
-
-/*setTimeout(function(){location.reload();}, 300000);*/
