@@ -1,0 +1,23 @@
+{
+  "name": "Siebel - Timed Refresh",
+  "description": "Refresh your Siebel view on a timer.",
+  "version": "1.0.0.0",
+  "permissions": ["tabs", "cookies", "*://siebel.prod.quest.corp/*"],
+  "icons": {
+  	"16": "16x16.png",
+  	"48": "48x48.png",
+  	"128": "128x128.png"
+  },
+  "browser_action": {
+      	"default_icon": "128x128.png",
+      	"default_title": "Siebel - Timed Refresh - Options",
+      	"default_popup": "options.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://siebel.prod.quest.corp/*"],
+      "js": ["contentScript.js"]
+    }    
+  ],
+  "manifest_version": 2
+}
