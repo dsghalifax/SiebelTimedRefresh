@@ -16,7 +16,7 @@ function setCookie(url, name, value, expiration){
 
 function saveInterval(){
 	setCookie('http://siebel.prod.quest.corp/support_enu/','SiebelRefreshTimerInterval',document.getElementById('interval').value,5684918675);
-	document.getElementById('mainText').innerHTML = 'Refresh Siebel for interval to take affect.';
+	document.getElementById('mainText').innerHTML = 'REFRESH INTERVAL SAVED!';
 	document.getElementById('intervalInput').style.display = 'none';
 	document.getElementById('saveIntervalButtonDiv').style.display = 'none';
 }
