@@ -1,7 +1,7 @@
 {
   "name": "Siebel - Timed Refresh",
   "description": "Refresh your Siebel view on a timer.",
-  "version": "1.0.0.2",
+  "version": "1.0.0.3",
   "permissions": ["tabs", "cookies", "*://siebel.prod.quest.corp/*"],
   "icons": {
   	"16": "16x16.png",
