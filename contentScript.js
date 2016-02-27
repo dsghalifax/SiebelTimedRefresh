@@ -1,3 +1,80 @@
+/* jsTimer.js */
+function jsTimer(Milliseconds,callbackFunction){
+	var _Interval = 5000;
+	var _Action = function(){};
+	var _Running = false;
+
+	Object.defineProperty(this,'Interval',{
+		get: function(){
+			return _Interval;
+		},
+		set: function(val){
+			if (typeof val == 'number'){
+				_Interval = val;
+			} else {
+				throw new Error('Invalid type: please specify a value of type \'number\'');
+			}
+		}
+	});
+
+	Object.defineProperty(this,'Action',{
+		get: function(){
+			return _Action;
+		},
+		set: function(val){
+			if (typeof val == 'function'){
+				_Action = val;
+			} else {
+				throw new Error('Invalid type: please specify a value of type \'function\'');
+			}
+		}
+	});
+
+	Object.defineProperty(this,'Start',{
+		value: function(){
+			this.Timer = setInterval(_Action,_Interval);
+			_Running = true;
+		},
+		writable: false
+	});
+
+	Object.defineProperty(this,'Stop',{
+		value: function(){
+			clearInterval(this.Timer);
+			_Running = false;
+		},
+		writable: false
+	});
+
+	Object.defineProperty(this,'Restart',{
+		value: function(){
+			if (this.Running){
+				this.Stop();
+				this.Start();
+			}
+		},
+		writable: false
+	});
+
+	Object.defineProperty(this,'Running',{
+		get: function(){
+			return _Running;
+		},
+		set: function(){
+			throw new Error('Status is read-only.');
+		}
+	});
+
+	if (Milliseconds){
+		this.Interval = Milliseconds;
+	}
+
+	if (callbackFunction){
+		this.Action = callbackFunction;
+	}
+}
+/* END jsTimer.js */
+
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
@@ -26,41 +103,36 @@ var refreshInterval = parseInt(getCookie('SiebelRefreshTimerInterval'));
 var prevURL = '';
 var prevInterval = parseInt(getCookie('SiebelRefreshTimerInterval'));
 
-var refreshEnabled = false;
 var locationMatch = 'SWECmd=GotoView&SWEView=All+Service+Request+List+View';
-var refreshTimer = null;
 
-var checkLocation = setInterval(function(){
+var refreshTimer = new jsTimer(refreshInterval,function(){
+	location.reload();
+});
+
+var monitorProcess = new jsTimer(500,function(){
+	// Check URL to determine start/stop refresh timer.
 	var locationURL = location.href;
 	if (locationURL.indexOf(locationMatch) > -1){
-		refreshEnabled = true;
+		refreshTimer.Start();
 	} else {
-		refreshEnabled = false;
+		refreshTimer.Stop();
 	}
-},500);
 
-var detectRefresh = setInterval(function(){
-	if (refreshEnabled){
+	// Monitor environment for changes.
+	if (refreshTimer.Running){
+		// Detect URL change to restart refresh timer.
 		if (location.href != prevURL){
-			clearInterval(refreshTimer);
-			refreshTimer = null;
+			refreshTimer.Restart();
 			prevURL = location.href;
 		}
-
+		// Detect changes in refresh interval cookie setting.
 		if (prevInterval != parseInt(getCookie('SiebelRefreshTimerInterval'))){
-			clearInterval(refreshTimer);
-			refreshTimer = null;
-			prevInterval = parseInt(getCookie('SiebelRefreshTimerInterval'));
-			refreshInterval = parseInt(getCookie('SiebelRefreshTimerInterval'));
+			refreshTimer.Interval = parseInt(getCookie('SiebelRefreshTimerInterval'));
+			refreshTimer.Restart();
+			prevInterval = refreshTimer.Interval;
+			refreshInterval = refreshTimer.Interval;
 		}
-
-		if (refreshTimer == null){
-			refreshTimer = setInterval(function(){
-				location.reload();
-			},refreshInterval);
-		}
-	} else {
-		clearInterval(refreshTimer);
-		refreshTimer = null;
 	}
-},500);
+});
+
+monitorProcess.Start();
