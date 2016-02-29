@@ -110,22 +110,22 @@ var refreshTimer = new jsTimer(refreshInterval,function(){
 });
 
 var monitorProcess = new jsTimer(500,function(){
-	// Check URL to determine start/stop refresh timer.
-	var locationURL = location.href;
-	if (locationURL.indexOf(locationMatch) > -1){
-		refreshTimer.Start();
-	} else {
-		refreshTimer.Stop();
-	}
-
-	// Monitor environment for changes.
-	if (refreshTimer.Running){
-		// Detect URL change to restart refresh timer.
-		if (location.href != prevURL){
-			refreshTimer.Restart();
-			prevURL = location.href;
+	if (location.href != prevURL){
+		var locationURL = location.href;
+		if (locationURL.indexOf(locationMatch) > -1){
+			refreshTimer.Interval = parseInt(getCookie('SiebelRefreshTimerInterval'));
+			if (refreshTimer.Running == true){
+				refreshTimer.Restart();
+			} else {
+				refreshTimer.Start();
+			}
+		} else {
+			refreshTimer.Stop();
 		}
-		// Detect changes in refresh interval cookie setting.
+		prevURL = location.href;
+	}
+	
+	if (refreshTimer.Running == true){
 		if (prevInterval != parseInt(getCookie('SiebelRefreshTimerInterval'))){
 			refreshTimer.Interval = parseInt(getCookie('SiebelRefreshTimerInterval'));
 			refreshTimer.Restart();
