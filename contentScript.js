@@ -106,7 +106,7 @@ var prevInterval = parseInt(getCookie('SiebelRefreshTimerInterval'));
 var locationMatch = 'SWECmd=GotoView&SWEView=All+Service+Request+List+View';
 
 var refreshTimer = new jsTimer(refreshInterval,function(){
-	location.reload();
+	location.reload(true);
 });
 
 var monitorProcess = new jsTimer(500,function(){
