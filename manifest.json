@@ -20,7 +20,7 @@
   "content_scripts": [
     {
       "matches": ["*://siebel.prod.quest.corp/*"],
-      "js": ["contentScript.js"]
+      "js": ["SiebelRefreshContentScript.js"]
     }    
   ],
   "manifest_version": 2
